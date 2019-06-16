@@ -106,7 +106,7 @@ export default class LeftComponent extends React.Component<
                       }}
                       onClick={() => this.props.onSelect(item)}
                     >
-                      {item.note.slice(0, 20)}
+                      {item.note.slice(0, 40)}
                     </Button>
                     <div
                       style={{

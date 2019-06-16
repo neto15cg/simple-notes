@@ -8,6 +8,7 @@ export namespace NoteInput {
     value: string;
     onCancel: () => any;
     onSubmit: () => any;
+    editable: boolean;
   }
   export interface State {}
 }
@@ -79,7 +80,7 @@ export default class NoteInput extends React.Component<NoteInput.Props & NoteInp
                 color: '#f7f7f7',
               }}
             >
-              Cancelar
+              {this.props.editable ? 'Nova nota' : 'Cancelar'}
             </Button>
           </div>
         </div>

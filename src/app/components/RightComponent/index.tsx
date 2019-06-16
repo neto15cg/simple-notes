@@ -107,6 +107,7 @@ export default class RightComponent extends React.Component<
   handleDelete = () => {
     if (this.props.noteEdit) {
       this.props.onDelete(this.props.noteEdit.id);
+      ToastsStore.success('Nota removida com sucesso');
       this.setState({ note: '', tags: [] });
     }
   };
@@ -142,7 +143,12 @@ export default class RightComponent extends React.Component<
             {tags.map((item) => {
               return (
                 <Chip
-                  style={{ backgroundColor: '#2b918c', color: '#fff' }}
+                  style={{
+                    backgroundColor: '#2b918c',
+                    color: '#fff',
+                    marginRight: 5,
+                    marginBottom: 5,
+                  }}
                   key={item.id}
                   label={item.tag}
                   onDelete={() => this.handleDeleteTag(item.id)}
@@ -212,6 +218,7 @@ export default class RightComponent extends React.Component<
             value={note}
             onCancel={() => this.handleCancel()}
             onSubmit={() => this.handleSubmitNote()}
+            editable={this.props.noteEdit ? true : false}
           />
         </div>
         <ToastsContainer position={ToastsContainerPosition.BOTTOM_RIGHT} store={ToastsStore} />

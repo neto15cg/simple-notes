@@ -20,6 +20,11 @@ export default class TagsInput extends React.Component<TagsInput.Props & TagsInp
   onSubmit = () => {
     this.props.onSubimit();
   };
+  handleKeyDown = (e: any) => {
+    if (e.key === 'Enter') {
+      this.onSubmit();
+    }
+  };
 
   render() {
     return (
@@ -50,6 +55,7 @@ export default class TagsInput extends React.Component<TagsInput.Props & TagsInp
             onChange={(e) => this.handleChange(e.target.value)}
             margin="normal"
             variant="outlined"
+            onKeyDown={this.handleKeyDown}
           />
           <IconButton onClick={this.onSubmit}>
             <Add style={{ color: '#2b918c', border: '1px solid', borderRadius: 20 }} />
