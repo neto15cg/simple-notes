@@ -44,19 +44,15 @@ export default class TagsInput extends React.Component<TagsInput.Props & TagsInp
         >
           <TextField
             style={{ width: '90%' }}
-            InputLabelProps={{ style: { color: '#4086c7', fontSize: 16, fontWeight: 'bold' } }}
+            InputLabelProps={{ style: { color: '#2b918c', fontSize: 16, fontWeight: 'bold' } }}
             label="Adicionar Tag"
             value={this.props.value}
             onChange={(e) => this.handleChange(e.target.value)}
             margin="normal"
             variant="outlined"
-            // InputProps={{
-            //   startAdornment: 'Tag: ',
-            //   color: '#4086c7',
-            // }}
           />
           <IconButton onClick={this.onSubmit}>
-            <Add style={{ color: '#4086c7', border: '1px solid', borderRadius: 20 }} />
+            <Add style={{ color: '#2b918c', border: '1px solid', borderRadius: 20 }} />
           </IconButton>
         </div>
       </div>

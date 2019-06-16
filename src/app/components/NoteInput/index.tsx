@@ -47,7 +47,7 @@ export default class NoteInput extends React.Component<NoteInput.Props & NoteInp
             style={{ width: '99%' }}
             label="Adicionar Nota"
             InputLabelProps={{
-              style: { color: '#4086c7', fontSize: 22, fontWeight: 'bold' },
+              style: { color: '#2b918c', fontSize: 22, fontWeight: 'bold' },
             }}
             value={this.props.value}
             onChange={(e) => this.handleChange(e.target.value)}
@@ -61,7 +61,7 @@ export default class NoteInput extends React.Component<NoteInput.Props & NoteInp
           <div style={{ marginRight: 10 }}>
             <Button
               style={{
-                backgroundColor: '#4086c7',
+                backgroundColor: '#2b918c',
                 padding: '15px 40px 15px 40px',
                 color: '#f7f7f7',
               }}

@@ -1,7 +1,6 @@
 import * as React from 'react';
 import TextField from '@material-ui/core/TextField';
 import Add from '@material-ui/icons/Add';
-import Search from '@material-ui/icons/Search';
 import IconButton from '@material-ui/core/IconButton';
 import { Note } from 'app/ducks/note';
 import Button from '@material-ui/core/Button';
@@ -50,17 +49,17 @@ export default class LeftComponent extends React.Component<
             }}
           >
             <TextField
+              InputLabelProps={{
+                style: { color: '#2b918c', fontSize: 16, fontWeight: 'bold' },
+              }}
               style={{ width: '80%' }}
-              label="Search"
+              label="Buscar"
               onChange={(e) => this.handleChange(e.target.value)}
               margin="normal"
               variant="outlined"
-              InputProps={{
-                startAdornment: <Search />,
-              }}
             />
             <IconButton onClick={() => console.log('click')}>
-              <Add />
+              <Add style={{ color: '#2b918c', border: '1px solid', borderRadius: 20 }} />
             </IconButton>
           </div>
         </div>
@@ -86,6 +85,7 @@ export default class LeftComponent extends React.Component<
                   <div
                     style={{
                       borderBottom: '1px solid #b5b5b5',
+                      borderTop: '1px solid #b5b5b5',
                       width: '100%',
                       marginTop: 10,
                       paddingTop: 20,
@@ -115,7 +115,7 @@ export default class LeftComponent extends React.Component<
                         fontSize: 18,
                       }}
                     >
-                      {item.note.slice(20, 40)}
+                      {item.createdAt}
                     </div>
                   </div>
                 </React.Fragment>

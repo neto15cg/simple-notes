@@ -48,7 +48,7 @@ export type Actions = {
   GetSuccess: { type: ActionTypes.GetSuccess; payload: Note };
   GetError: { type: ActionTypes.GetError; payload: Error };
   DeleteStart: { type: ActionTypes.DeleteStart };
-  DeleteSuccess: { type: ActionTypes.DeleteSuccess; payload: Note };
+  DeleteSuccess: { type: ActionTypes.DeleteSuccess; payload: Array<Note> };
   DeleteError: { type: ActionTypes.DeleteError; payload: Error };
 };
 
@@ -132,7 +132,7 @@ export const Reducer = createReducer(initialState, {
     return state;
   },
   [ActionTypes.DeleteSuccess](state: Immutable.Map<string, any>, a: Actions['DeleteSuccess']) {
-    state = state.set('note', a.payload);
+    state = state.set('notes', a.payload);
     state = state.setIn(['loading', 'note.delete'], false);
     return state;
   },
@@ -190,6 +190,27 @@ export function updateNote(note: Note) {
         type: ActionTypes.UpdateSuccess,
         payload: notes,
       } as Actions['UpdateSuccess']);
+    } catch (e) {
+      dispatch({ type: ActionTypes.UpdateError, payload: e } as Actions['UpdateError']);
+    }
+  };
+}
+
+export function deleteNote(id: string) {
+  return (dispatch: any, getState) => {
+    try {
+      dispatch({ type: ActionTypes.DeleteStart } as Actions['DeleteStart']);
+      let notes = getState().note.get('notes');
+      let notesRemoved: Array<Note> = [];
+      notes.forEach((note: Note) => {
+        if (note.id !== id) {
+          notesRemoved.push(note);
+        }
+      });
+      dispatch({
+        type: ActionTypes.DeleteSuccess,
+        payload: notesRemoved,
+      } as Actions['DeleteSuccess']);
     } catch (e) {
       dispatch({ type: ActionTypes.UpdateError, payload: e } as Actions['UpdateError']);
     }

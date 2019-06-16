@@ -4,14 +4,19 @@ import Chip from '@material-ui/core/Chip';
 import TagsInput from 'app/components/TagsInput';
 import NoteInput from 'app/components/NoteInput';
 import { Note } from 'app/ducks/note';
+import DeleteOutlinedIcon from '@material-ui/icons/DeleteOutlined';
+import IconButton from '@material-ui/core/IconButton';
+import { ToastsContainer, ToastsStore, ToastsContainerPosition } from 'react-toasts';
 import Moment from 'moment';
+
 Moment.locale('pt-br');
 
 export namespace RightComponent {
   export interface Props {
     onSaveNote: (note: Note) => any;
-    noteEdit?: Note;
     onCancel: () => any;
+    onDelete: (id: string) => any;
+    noteEdit?: Note;
   }
   export interface State {}
 }
@@ -25,7 +30,6 @@ export default class RightComponent extends React.Component<
     if (prevProps !== this.props) {
       if (this.props.noteEdit !== undefined) {
         this.setState({ tags: this.props.noteEdit.tags, note: this.props.noteEdit.note });
-        console.log('==========>', this.props.noteEdit && this.props.noteEdit.tags);
       }
     }
   }
@@ -64,6 +68,7 @@ export default class RightComponent extends React.Component<
 
   handleSubmitNote = () => {
     if (this.props.noteEdit !== undefined) {
+      ToastsStore.success('Nota atualizada com sucesso');
       let note = {
         ...this.props.noteEdit,
         note: this.state.note,
@@ -73,6 +78,7 @@ export default class RightComponent extends React.Component<
       this.setState({ note: '', tags: [] });
     } else {
       if (this.state.note.length > 0 && this.state.tags.length > 0) {
+        ToastsStore.success('Nota criada com sucesso');
         let note = {
           id: uuid(),
           note: this.state.note,
@@ -81,6 +87,14 @@ export default class RightComponent extends React.Component<
         };
         this.props.onSaveNote(note);
         this.setState({ note: '', tags: [] });
+      } else {
+        if (this.state.tags.length <= 0 && this.state.note.length <= 0) {
+          ToastsStore.warning('É necessário adicionar pelo menos uma tag e uma nota');
+        } else if (this.state.tags.length <= 0) {
+          ToastsStore.warning('É necessário adicionar pelo menos uma tag');
+        } else {
+          ToastsStore.warning('É necessário adicionar pelo menos uma nota');
+        }
       }
     }
   };
@@ -88,6 +102,13 @@ export default class RightComponent extends React.Component<
   handleCancel = () => {
     this.props.onCancel();
     this.setState({ note: '', tags: [] });
+  };
+
+  handleDelete = () => {
+    if (this.props.noteEdit) {
+      this.props.onDelete(this.props.noteEdit.id);
+      this.setState({ note: '', tags: [] });
+    }
   };
 
   render() {
@@ -121,7 +142,7 @@ export default class RightComponent extends React.Component<
             {tags.map((item) => {
               return (
                 <Chip
-                  style={{ backgroundColor: '#4086c7', color: '#fff' }}
+                  style={{ backgroundColor: '#2b918c', color: '#fff' }}
                   key={item.id}
                   label={item.tag}
                   onDelete={() => this.handleDeleteTag(item.id)}
@@ -134,17 +155,56 @@ export default class RightComponent extends React.Component<
           style={{
             flex: 5,
             alignItems: 'center',
-            justifyContent: 'center',
+            justifyContent: 'space-between',
             width: '100%',
             display: 'flex',
-            color: '#949494',
-            fontSize: 18,
-            fontWeight: 'bold',
+            flexDirection: 'row',
           }}
         >
-          {this.props.noteEdit
-            ? this.props.noteEdit.createdAt
-            : Moment().format('DD/MM/YYYY HH:mm:ss')}
+          <div
+            style={{
+              color: '#949494',
+              fontSize: 18,
+              fontWeight: 'bold',
+              flex: 1,
+              marginRight: 10,
+              marginLeft: 10,
+              flexDirection: 'row',
+              display: 'flex',
+            }}
+          >
+            <div
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                flex: 60,
+                alignItems: 'flex-end',
+                justifyContent: 'center',
+              }}
+            >
+              {this.props.noteEdit
+                ? this.props.noteEdit.createdAt
+                : Moment().format('DD/MM/YYYY HH:mm:ss')}
+            </div>
+            <div
+              style={{
+                flex: 40,
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                alignItems: 'flex-end',
+                marginRight: 10,
+              }}
+            >
+              {this.props.noteEdit ? (
+                <div>
+                  <IconButton onClick={this.handleDelete}>
+                    <DeleteOutlinedIcon style={{ color: '#2b918c' }} />
+                  </IconButton>
+                </div>
+              ) : null}
+            </div>
+          </div>
         </div>
         <div style={{ flex: 95 }}>
           <NoteInput
@@ -154,6 +214,7 @@ export default class RightComponent extends React.Component<
             onSubmit={() => this.handleSubmitNote()}
           />
         </div>
+        <ToastsContainer position={ToastsContainerPosition.BOTTOM_RIGHT} store={ToastsStore} />
       </div>
     );
   }
