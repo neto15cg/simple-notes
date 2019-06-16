@@ -14,7 +14,7 @@ export namespace NoteInput {
 }
 
 export default class NoteInput extends React.Component<NoteInput.Props & NoteInput.State> {
-  handleChange = (text) => {
+  handleChange = (text: string) => {
     this.props.onChange(text);
   };
 

@@ -68,14 +68,22 @@ export default class RightComponent extends React.Component<
 
   handleSubmitNote = () => {
     if (this.props.noteEdit !== undefined) {
-      ToastsStore.success('Nota atualizada com sucesso');
       let note = {
         ...this.props.noteEdit,
         note: this.state.note,
         tags: this.state.tags,
       };
-      this.props.onSaveNote(note);
-      this.setState({ note: '', tags: [] });
+      if (this.state.tags.length <= 0 && this.state.note.length <= 0) {
+        ToastsStore.warning('É necessário adicionar pelo menos uma tag e uma nota');
+      } else if (this.state.tags.length <= 0) {
+        ToastsStore.warning('É necessário adicionar pelo menos uma tag');
+      } else if (this.state.note.length <= 0) {
+        ToastsStore.warning('É necessário adicionar pelo menos uma nota');
+      } else {
+        ToastsStore.success('Nota atualizada com sucesso');
+        this.props.onSaveNote(note);
+        this.setState({ note: '', tags: [] });
+      }
     } else {
       if (this.state.note.length > 0 && this.state.tags.length > 0) {
         ToastsStore.success('Nota criada com sucesso');

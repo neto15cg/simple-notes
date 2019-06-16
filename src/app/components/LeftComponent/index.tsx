@@ -1,7 +1,6 @@
 import * as React from 'react';
 import TextField from '@material-ui/core/TextField';
-import Add from '@material-ui/icons/Add';
-import IconButton from '@material-ui/core/IconButton';
+import Search from '@material-ui/icons/Search';
 import { Note } from 'app/ducks/note';
 import Button from '@material-ui/core/Button';
 
@@ -9,6 +8,7 @@ export namespace LeftComponent {
   export interface Props {
     notes: Array<Note>;
     onSelect: (note: Note) => void;
+    onChangeFilter: (filter: string) => void;
   }
   export interface State {}
 }
@@ -17,7 +17,7 @@ export default class LeftComponent extends React.Component<
   LeftComponent.Props & LeftComponent.State
 > {
   handleChange = (text) => {
-    console.log(text);
+    this.props.onChangeFilter(text);
   };
 
   render() {
@@ -58,9 +58,7 @@ export default class LeftComponent extends React.Component<
               margin="normal"
               variant="outlined"
             />
-            <IconButton onClick={() => console.log('click')}>
-              <Add style={{ color: '#2b918c', border: '1px solid', borderRadius: 20 }} />
-            </IconButton>
+            <Search style={{ color: '#2b918c', padding: 10 }} />
           </div>
         </div>
         <div
@@ -106,7 +104,7 @@ export default class LeftComponent extends React.Component<
                       }}
                       onClick={() => this.props.onSelect(item)}
                     >
-                      {item.note.slice(0, 40)}
+                      {item.note.slice(0, 20)}
                     </Button>
                     <div
                       style={{

@@ -32,6 +32,7 @@ export enum ActionTypes {
   DeleteStart = 'note.DeleteStart',
   DeleteSuccess = 'note.DeleteSuccess',
   DeleteError = 'note.DeleteError',
+  Filter = 'note.filter',
 }
 
 export type Actions = {
@@ -50,11 +51,14 @@ export type Actions = {
   DeleteStart: { type: ActionTypes.DeleteStart };
   DeleteSuccess: { type: ActionTypes.DeleteSuccess; payload: Array<Note> };
   DeleteError: { type: ActionTypes.DeleteError; payload: Error };
+  Filter: { type: ActionTypes.Filter; payload: string };
 };
 
 export type LoadingSections = {
   'note.basic': boolean;
 };
+
+const data = localStorage.getItem('notes');
 
 // Reducers
 const initialState = Immutable.Map<'note', any>({
@@ -66,8 +70,9 @@ const initialState = Immutable.Map<'note', any>({
     'note.delete': false,
   }),
   error: undefined,
-  notes: [] as Array<Note>,
+  notes: data !== null ? JSON.parse(data) : [],
   note: undefined,
+  filter: '',
 });
 
 export const Reducer = createReducer(initialState, {
@@ -78,6 +83,7 @@ export const Reducer = createReducer(initialState, {
   [ActionTypes.CreateSuccess](state: Immutable.Map<string, any>, a: Actions['CreateSuccess']) {
     state = state.set('note', a.payload);
     state = state.setIn(['loading', 'note.create'], false);
+    localStorage.setItem('notes', JSON.stringify(a.payload));
     return state;
   },
   [ActionTypes.CreateError](state: Immutable.Map<string, any>, a: Actions['CreateError']) {
@@ -92,6 +98,7 @@ export const Reducer = createReducer(initialState, {
   [ActionTypes.UpdateSuccess](state: Immutable.Map<string, any>, a: Actions['UpdateSuccess']) {
     state = state.set('notes', a.payload);
     state = state.setIn(['loading', 'note.update'], false);
+    localStorage.setItem('notes', JSON.stringify(a.payload));
     return state;
   },
   [ActionTypes.UpdateError](state: Immutable.Map<string, any>, a: Actions['UpdateError']) {
@@ -134,11 +141,16 @@ export const Reducer = createReducer(initialState, {
   [ActionTypes.DeleteSuccess](state: Immutable.Map<string, any>, a: Actions['DeleteSuccess']) {
     state = state.set('notes', a.payload);
     state = state.setIn(['loading', 'note.delete'], false);
+    localStorage.setItem('notes', JSON.stringify(a.payload));
     return state;
   },
   [ActionTypes.DeleteError](state: Immutable.Map<string, any>, a: Actions['DeleteError']) {
     state = state.set('error', a.payload);
     state = state.setIn(['loading', 'note.delete'], false);
+    return state;
+  },
+  [ActionTypes.Filter](state: Immutable.Map<string, any>, a: Actions['Filter']) {
+    state = state.set('filter', a.payload);
     return state;
   },
 });
@@ -149,10 +161,67 @@ const mainSelector = (state) => state.note as Immutable.Map<string, any>;
 export const getNotes = createSelector(
   mainSelector,
   (state) => {
+    const notes = state.get('notes', []);
+    let filter = state.get('filter') || '';
+    let notesFiltered: Array<Note> = [];
+
+    if (filter.length > 0 && notes.length > 0) {
+      filter = filter.replace(/\s+/g, ' ');
+      let arr = filter.length > 0 ? filter.split(' ') : [];
+
+      //remove empty elements
+      let arrFilter: Array<string> = [];
+      arr.forEach((element) => {
+        if (element.length > 0) {
+          arrFilter.push(element);
+        }
+      });
+
+      //build regex
+      let regex = `\\`;
+      for (let i = 0; i < arrFilter.length; i++) {
+        if (arrFilter.length === 1) {
+          regex = regex + `${arrFilter[i]}`;
+        } else {
+          if (i === arrFilter.length - 1) {
+            regex = regex + `${arrFilter[i]}`;
+          } else {
+            regex = regex + `${arrFilter[i]}|`;
+          }
+        }
+      }
+
+      if (arrFilter.length > 0) {
+        const regEx = new RegExp(regex, 'gi');
+
+        notes.forEach((item: Note) => {
+          let match = item.note.match(regEx);
+          if (match !== null) {
+            notesFiltered.push(item);
+          }
+        });
+      }
+
+      return {
+        list: notesFiltered || [],
+        loading: state.getIn(['loading', 'note.list']),
+        error: state.get('error'),
+      };
+    } else {
+      return {
+        list: state.get('notes', []),
+        loading: state.getIn(['loading', 'note.list']),
+        error: state.get('error'),
+      };
+    }
+  }
+);
+
+export const getFilter = createSelector(
+  mainSelector,
+  (state) => {
     return {
-      list: state.get('notes'),
-      loading: state.getIn(['loading', 'note.list']),
-      error: state.get('error'),
+      filter: state.get('filter') || '',
     };
   }
 );
@@ -214,5 +283,11 @@ export function deleteNote(id: string) {
     } catch (e) {
       dispatch({ type: ActionTypes.UpdateError, payload: e } as Actions['UpdateError']);
     }
+  };
+}
+
+export function createFilter(keywords: string) {
+  return (dispatch: any) => {
+    dispatch({ type: ActionTypes.Filter, payload: keywords });
   };
 }
