@@ -21,5 +21,5 @@ $ yarn start or $npm start
 ## Server Running
 
 ```
-http://locahost:3000
+http://127.0.0.1:3000
 ```
