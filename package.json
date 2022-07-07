@@ -68,7 +68,7 @@
     "classnames": "^2.2.5",
     "downshift": "^1.31.14",
     "immutable": "^3.8.2",
-    "moment": "^2.21.0",
+    "moment": "^2.29.4",
     "react": "^16.3.2",
     "react-dnd": "^8.0.0",
     "react-dnd-html5-backend": "^8.0.0",
